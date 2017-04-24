@@ -1,0 +1,34 @@
+apply plugin: 'cpp'
+
+model {
+    components {
+        hello(NativeLibrarySpec)
+    }
+}
+
+model {
+    components {
+        main(NativeExecutableSpec) {
+            sources {
+                cpp {
+                    lib library: "hello"
+                }
+            }
+        }
+    }
+}
+
+model {
+    binaries {
+        all {
+            // Define a preprocessor macro for every binary
+            cppCompiler.define "NDEBUG"
+
+            // Define toolchain-specific compiler and linker options
+            if (toolChain in Gcc) {
+                cppCompiler.args "-O2", "-fno-access-control"
+                linker.args "-Xlinker", "-S"
+            }
+        }
+    }
+}
